@@ -6,6 +6,8 @@
 class SavedSearch < Sequel::Model
   many_to_one :user
 
+  require "cgi"
+
   PAGE_SIZE = 10
 
   # The list of commits this saved search represents.
@@ -55,6 +57,15 @@ class SavedSearch < Sequel::Model
       message << "in the #{comma_separated_list(repos_list)} #{english_quantity("repo", repos_list.size)}"
     end
     message.join(" ")
+  end
+
+  # generates a query_string representation of the saved search.
+  def query_string
+    query_string = ["?"]
+    query_string << "repo=#{URI.encode(self.repos)}&" unless self.repos.nil?
+    query_string << "author=#{URI.encode(self.authors)}&" unless self.authors.nil?
+    query_string << "branch=#{URI.encode(self.branches)}&" unless self.branches.nil?
+    query_string.join("")[0..-2]
   end
 
   def authors_list() (self.authors || "").split(",").map(&:strip) end

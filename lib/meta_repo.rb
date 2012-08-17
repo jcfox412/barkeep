@@ -41,6 +41,8 @@ class MetaRepo
 
     repo_paths = Dir.glob("#{@repos_root}/*/")
 
+    puts repo_paths
+
     repo_paths.each do |path|
       path = Pathname.new(path).realpath.to_s # Canonical path
       name = File.basename(path)

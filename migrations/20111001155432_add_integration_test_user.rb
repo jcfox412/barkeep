@@ -1,5 +1,5 @@
 # Creates a user which we can use during our integration tests.
-require "./" + File.join(File.dirname(__FILE__), "migration_helper")
+require File.join(File.dirname(__FILE__), "migration_helper")
 
 Sequel.migration do
   up do

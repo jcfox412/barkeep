@@ -14,7 +14,6 @@ class GitHelper
     unless (git_command_options.keys & [:n, :max_count]).empty?
       raise "Control result count with 'limit', not in options"
     end
-
     if retain == :first || mode == :count
       return self.rev_list(repo, git_command_options.merge({ :max_count => limit}), mode)
     else
@@ -36,7 +35,6 @@ class GitHelper
   # - mode: :commits or :count.
   def self.rev_list(repo, command_options, mode = :commits)
     raise "Cannot specify formatting" if command_options[:pretty] || command_options[:format]
-
     command_options = command_options.dup
     count = (mode != :commits)
     extra_options = count ? { :count => true } : extra_options = { :pretty => "raw" }

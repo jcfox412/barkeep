@@ -1,5 +1,5 @@
 # This table is no longer needed since we're managing jobs with Resque.
-require "./" + File.join(File.dirname(__FILE__), "migration_helper")
+require File.join(File.dirname(__FILE__), "migration_helper")
 
 Sequel.migration do
   up do

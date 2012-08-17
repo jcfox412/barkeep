@@ -3,6 +3,8 @@
 <%= @pinion.js_url("/coffee/stats.js") %>
 
 <div id="stats">
+	<h2 class="statsHeader"><%= stats_title %></h2>
+	<br />
   <% if current_user %>
     <form id="statsRangeForm" action="/set_stats_time_range" method="post">
       <span>Show stats from</span>
@@ -55,7 +57,7 @@
       <div class="header"><div class="name">Chatty Commits</div></div>
       <table class="commitsList">
         <% chatty_commits.each do |commit, count| %>
-          <%= erb :_commit_line, :layout => false, :locals => { :commit => commit } %>
+          <%= erb :_commit_line,:layout => false, :locals => { :commit => commit } %>
         <% end %>
       </table>
     </div>

@@ -19,7 +19,11 @@
   <div class="header">
     <div class="dragHandle"></div>
     <a href="#" class="delete">x</a>
+		<div class="savedSearchStats">
+			<a href="/stats<%= saved_search.query_string %>" class="permalink" target="_blank">View statistics</a>
+		</div>
     <div class="searchOptions">
+			|
       <a href="#" class="searchOptionsLink">Search options</a>
 
       <!-- This container is needed because the search options menu slides down from it. It has

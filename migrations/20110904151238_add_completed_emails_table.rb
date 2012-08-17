@@ -1,5 +1,4 @@
-require "./" + File.join(File.dirname(__FILE__), "migration_helper")
-
+require File.join(File.dirname(__FILE__), "migration_helper")
 Sequel.migration do
   up do
     create_table :completed_emails do

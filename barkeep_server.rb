@@ -388,31 +388,62 @@ class BarkeepServer < Sinatra::Base
   get "/stats" do
     # TODO(dmac): Allow users to change range of stats page without logging in.
     stats_time_range = current_user ? current_user.stats_time_range : "month"
-    since = case stats_time_range
-            when "hour" then Time.now - 60 * 60
-            when "day" then Time.now - 60 * 60 * 24
-            when "week" then Time.now - 60 * 60 * 24 * 7
-            when "month" then Time.now - 60 * 60 * 24 * 30
-            when "year" then Time.now - 60 * 60 * 24 * 30 * 365
-            when "all" then Time.at(0)
-            else Time.at(0)
-            end
-    num_commits = Stats.num_commits(since)
+    if params.empty?
+      since = case stats_time_range
+              when "hour" then Time.now - 60 * 60
+              when "day" then Time.now - 60 * 60 * 24
+              when "week" then Time.now - 60 * 60 * 24 * 7
+              when "month" then Time.now - 60 * 60 * 24 * 30
+              when "year" then Time.now - 60 * 60 * 24 * 30 * 365
+              when "all" then Time.at(0)
+              else Time.at(0)
+              end
+    else
+      since = Time.now - 60 * 60 * 24 * current_user.saved_search_time_period
+    end
+
+    stats_title = ["Stats for Commits"]
+    authors_list = params[:author] ? params[:author].split(",").map{ |a| a[1..a.length-2] }.join(", ") : []
+    repos_list = params[:repos] ? params[:repos].split(",").join(", ") : []
+    branches_list = params[:branch] ? params[:branch].split(",").join(", ") : []
+    stats_title << "by #{authors_list}" unless authors_list.empty?
+    stats_title << "on #{branches_list}" unless branches_list.empty?
+    unless repos_list.empty?
+      stats_title << "in the #{repos_list} #{repos_list.size == 1 ? "repo" : "repos" }"
+    end
+    stats_title = stats_title.join(" ")
+
+    commit_data = Stats.get_commits(since, params)
+    num_commits = commit_data[:commit_count]
     erb :stats, :locals => {
       :num_commits => num_commits,
-      :unreviewed_percent => Stats.num_unreviewed_commits(since).to_f / num_commits,
-      :commented_percent => Stats.num_reviewed_without_lgtm_commits(since).to_f / num_commits,
-      :approved_percent => Stats.num_lgtm_commits(since).to_f / num_commits,
-      :chatty_commits => Stats.chatty_commits(since),
-      :top_reviewers => Stats.top_reviewers(since)
+      :unreviewed_percent => commit_data[:unreviewed_count].to_f / num_commits,
+      :commented_percent => commit_data[:commented_count].to_f / num_commits,
+      :approved_percent => commit_data[:reviewed_count].to_f / num_commits,
+      :chatty_commits => commit_data[:chatty_counts],
+      :top_reviewers => commit_data[:commenter_counts],
+      :stats_title => stats_title
     }
   end
 
   post "/set_stats_time_range" do
+    require "pry"; binding.pry
     halt 400 unless ["hour", "day", "week", "month", "year", "all"].include? params[:since]
     current_user.stats_time_range = params[:since]
     current_user.save
     redirect "/stats"
+  end
+
+  post "/set_repo" do
+    require "pry"; binding.pry
+    redirect "/stats"
+  end
+
+  get "/commits_search" do
+    erb :_search, :locals => {
+      :current_user => current_user, :query_params => params, :token => nil,
+      :direction => "before", :page_number => 1
+    }
   end
 
   get "/profile/:id" do

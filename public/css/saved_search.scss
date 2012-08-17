@@ -41,7 +41,7 @@
 
   .header {
     .name {
-      width: 750px;
+      width: 650px;
       overflow: hidden;
       white-space: nowrap;
     }
@@ -65,6 +65,22 @@
       padding-right: 5px;
       float: right;
       @include closeLinks;
+    }
+
+    .savedSearchStats {
+      font-size: 12px;
+      position: absolute;
+      right: 0;
+      margin-right: $dragHandleWidth + 28;
+      padding-right: 103px;
+      padding-top: 6px;
+
+      a.permalink {
+        /* Horizontal padding so that when you click on the link, the background fill looks nicer. */
+        padding: 0 2px;
+        padding-top: 1px;
+      }
+
     }
 
     .searchOptions {

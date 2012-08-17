@@ -1,4 +1,6 @@
-require "./" + File.join(File.dirname(__FILE__), "migration_helper")
+require "bundler/setup"
+require "pathological"
+require "migrations/migration_helper.rb"
 
 Sequel.migration do
   change do
